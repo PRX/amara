@@ -9,11 +9,11 @@ module Amara
     VIDEO_ORDERING      = [:created, :title]
 
     def languages(options={}, &block)
-      @languages ||= Videos::Languages.new(current_options.merge(args_to_options(options)), &block)
+      @languages ||= ApiFactory.api('Amara::Videos::Languages', self, params, &block)
     end
 
     def urls(options={}, &block)
-      @urls ||= Videos::Urls.new(current_options.merge(args_to_options(options)), &block)
+      @urls ||= ApiFactory.api('Amara::Videos::Urls', self, params, &block)
     end
 
   end

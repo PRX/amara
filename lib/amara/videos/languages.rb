@@ -4,7 +4,7 @@ module Amara
   class Videos::Languages < API
 
     def subtitles(options={}, &block)
-      @subtitles ||= Videos::Languages::Subtitles.new(current_options.merge(args_to_options(options)), &block)
+      @subtitles ||= ApiFactory.api('Amara::Videos::Languages::Subtitles', self, params, &block)
     end
 
   end
