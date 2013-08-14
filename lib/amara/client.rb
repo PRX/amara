@@ -7,9 +7,9 @@ module Amara
       @teams ||= ApiFactory.api('Amara::Teams', self, params, &block)
     end
 
-    # def videos(params={}, &block)
-    #   @videos ||= Videos.new(current_options.merge(args_to_options(params)), &block)
-    # end
+    def videos(params={}, &block)
+      @videos ||= ApiFactory.api('Amara::Videos', self, params, &block)
+    end
 
     def languages(params={}, &block)
       @languages ||= ApiFactory.api('Amara::Languages', self, params, &block)

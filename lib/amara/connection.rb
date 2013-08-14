@@ -15,22 +15,25 @@ module Amara
 
     def merge_default_options(opts={})
       headers = opts.delete(:headers) || {}
-      options = {
-        :headers => {
-          'User-Agent'   => user_agent,
-          'Accept'       => "application/json",
-          'Content-Type' => "application/json"
-        },
-        :ssl => {:verify => false},
-        :url => endpoint
-      }.merge(opts)
+      options = HashWithIndifferentAccess.new(
+        {
+          :headers => {
+            'User-Agent'   => user_agent,
+            'Accept'       => "application/json",
+            'Content-Type' => "application/json"
+          },
+          :ssl => {:verify => false},
+          :url => endpoint
+        }        
+      ).merge(opts)
       options[:headers] = options[:headers].merge(headers)
-      Amara::HEADERS.each{|k,v| options[:headers][v] = options.delete(k) if options.key?(k)}      
+      Amara::HEADERS.each{|k,v| options[:headers][v] = options.delete(k) if options.key?(k)}
       options
     end
 
     def connection(options={})
       opts = merge_default_options(options)
+      # puts "connection:\n\toptions: #{options.inspect}\n\topts: #{opts.inspect}"
       Faraday::Connection.new(opts) do |connection|
         connection.request  :url_encoded
 

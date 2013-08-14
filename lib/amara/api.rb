@@ -54,8 +54,8 @@ module Amara
     def base_path
       parts = self.class.name.split("::").inject([]){|a, c|
         if c != 'Amara'
-          base = c.downcase.underscore
-          a << base
+          base = c.underscore
+          a << base.tr('_','-')
           a << current_options["#{base.singularize}_id"] if current_options["#{base.singularize}_id"]
         end
         a
