@@ -7,7 +7,7 @@ require 'amara/teams'
 
 require 'webmock/minitest'
 
-describe Amara::Client do
+describe Amara::Teams do
 
   it "gets the base path for this subclass of API" do
     teams = Amara::Teams.new
@@ -20,7 +20,6 @@ describe Amara::Client do
        to_return(body: first_response)
 
     teams = Amara::Teams.new(api_key: 'thisisakey', api_username: 'test_user')
-    # puts teams.list.raw.inspect
 
     response = teams.list(limit: 2)
     response.objects.must_equal response.object
@@ -37,7 +36,6 @@ describe Amara::Client do
        to_return(body: response)
 
     teams = Amara::Teams.new(api_key: 'thisisakey', api_username: 'test_user')
-    # puts teams.list.raw.inspect
 
     response = teams.get("tedx-import")
     response.object.wont_be_nil

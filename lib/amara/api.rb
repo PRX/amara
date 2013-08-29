@@ -45,7 +45,7 @@ module Amara
           request.url(request_path, params)
         when :post, :put
           request.path = request_path
-          request.body = params[:data] unless params.empty?
+          request.body = params[:data] ? params[:data].to_json : nil
         end
       end
       Amara::Response.new(response, {api: self, method: method, path: path, params: params})
