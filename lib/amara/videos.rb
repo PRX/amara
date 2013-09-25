@@ -8,11 +8,11 @@ module Amara
     VIDEO_LIST_PARAMS   = [:order_by, :project, :team, :video_url]
     VIDEO_ORDERING      = [:created, :title]
 
-    def languages(options={}, &block)
+    def languages(params={}, &block)
       @languages ||= ApiFactory.api('Amara::Videos::Languages', self, params, &block)
     end
 
-    def urls(options={}, &block)
+    def urls(params={}, &block)
       @urls ||= ApiFactory.api('Amara::Videos::Urls', self, params, &block)
     end
 
