@@ -31,25 +31,36 @@ describe Amara::Teams do
   end
 
   it "returns a team" do
-    response = '{"created": "2013-02-14T07:29:55", "deleted": false, "description": "", "header_html_text": "", "is_moderated": false, "is_visible": true, "logo": null, "max_tasks_per_member": null, "membership_policy": "Open", "name": "", "projects_enabled": false, "resource_uri": "/api2/partners/teams/tedx-import/", "slug": "tedx-import", "subtitle_policy": "Anyone", "task_assign_policy": "Any team member", "task_expiration": null, "translate_policy": "Anyone", "video_policy": "Any team member", "workflow_enabled": false}'
-    stub_request(:get, "https://www.amara.org/api2/partners/teams/tedx-import/").
+    response = '{"created": "2013-02-14T07:29:55", "deleted": false, "description": "", "header_html_text": "", "is_moderated": false, "is_visible": true, "logo": null, "max_tasks_per_member": null, "membership_policy": "Open", "name": "", "projects_enabled": false, "resource_uri": "/api2/partners/teams/tedx-import/", "slug": "prx-test-1", "subtitle_policy": "Anyone", "task_assign_policy": "Any team member", "task_expiration": null, "translate_policy": "Anyone", "video_policy": "Any team member", "workflow_enabled": false}'
+    stub_request(:get, "https://www.amara.org/api2/partners/teams/prx-test-1/").
        to_return(body: response)
 
     teams = Amara::Teams.new(api_key: 'thisisakey', api_username: 'test_user')
 
-    response = teams.get("tedx-import")
+    response = teams.get("prx-test-1")
     response.object.wont_be_nil
     team = response.object
-    team.slug.must_equal 'tedx-import'
+    team.slug.must_equal 'prx-test-1'
 
-    response = teams.get(team_id: "tedx-import")
+    response = teams.get(team_id: "prx-test-1")
     response.object.wont_be_nil
     team = response.object
-    team.slug.must_equal 'tedx-import'
+    team.slug.must_equal 'prx-test-1'
   end
 
   it "created a new team" do
     create_response = '{"created": "2013-08-01T13:11:45.167206", "deleted": false, "description": "", "header_html_text": "", "is_moderated": false, "is_visible": true, "logo": null, "max_tasks_per_member": null, "membership_policy": "Open", "name": "prx test 1", "projects_enabled": false, "resource_uri": "/api2/partners/teams/prx-test-1/", "slug": "prx-test-1", "subtitle_policy": "Anyone", "task_assign_policy": "Any team member", "task_expiration": null, "translate_policy": "Anyone", "video_policy": "Any team member", "workflow_enabled": false}'
+
+    stub_request(:post, "https://www.amara.org/api2/partners/teams/").
+      with(:body => "{\"slug\":\"prx-test-1\",\"name\":\"prx test 1\"}",
+           :headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443', 'User-Agent'=>'Amara Ruby Gem 0.1.0', 'X-Api-Username'=>'test_user', 'X-Apikey'=>'thisisakey'}).
+      to_return(:status => 200, :body => create_response, :headers => {})
+    
+
+    teams = Amara::Teams.new(api_key: 'thisisakey', api_username: 'test_user')
+
+    response = teams.create(slug: 'prx-test-1', name: 'prx test 1')
+
   end
 
 end

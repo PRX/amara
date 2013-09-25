@@ -3,6 +3,7 @@
 Ruby gem to access the Amara API.
 
 http://www.amara.org/
+
 http://amara.readthedocs.org/en/latest/api.html
 
 ## Installation
@@ -24,9 +25,81 @@ Or install it yourself as:
 You need a user account and API key to use the API.
 Some capabilities (e.g. creating a team) are only enabled for enterprise customers.
 
+You can use the API on these top level and nested entities (see the client.rb for top level) that match the APi docs:
+
+```ruby
+amara = Amara::Client.new
+
+amara.videos
+amara.videos.languages
+amara.videos.languages.subtitles
+amara.videos.urls
+
+amara.users
+
+amara.teams
+amara.teams.applications
+amara.teams.members
+amara.teams.projects
+amara.teams.safe_members
+amara.teams.tasks
+
+amara.activity
+
+amara.languages
+
+amara.message
+```
+
+For each type of entity, you get the following methods: `list`, `get`, `create`, `update`, and `delete`.
+
+All these method calls return an `Amara::Response` instance.
+
+Entities may be nested, and params passed in for each nesting.
+params to an entity can be a Hash of options, or a string, in which case it is treated like the id of that entity type.
+
+Here is an example of how to get the English subtitles for a video with a certain id.
+It shows the use of nested entities, string id params for each entity, and the get method called with no query params:
 ```ruby
 amara = Amara::Client.new(api_username: 'amara_api_username', api_key: 'amara_api_key')
-amara.videos
+
+# get the English subtitles for a video
+amara.videos('yourVideoId').languages('en').subtitles.get
+
+```
+
+Here are some more examples of listing and creating a video:
+```ruby
+# get a list of videos
+amara = Amara::Client.new(api_username: 'amara_api_username', api_key: 'amara_api_key')
+response = amara.videos
+videos = response.objects.list
+
+# amara responses for a 'list' are paged, get the next page like this:
+more_videos = response.next_page
+
+
+# create a video
+response = amara.videos.create({
+  team:      'my-team-name',
+  title:     'title',
+  video_url: 'https://archive.org/download/example/example.ogg',
+  primary_audio_language_code: 'en'
+})
+video = response.object
+```
+
+You can do these same operations for Teams and other entities.
+The gem defines lists of `Amara::POLICIES` and `Amara::TEAM_POLICIES` you can use in your requests:
+```ruby
+# create a team
+new_team = amara.teams.create(
+  slug:              'prx-test-1',
+  name:              'prx test 1',
+  is_visible:        false,
+  membership_policy: Amara::TEAM_POLICIES[:invite]
+)
+
 ```
 
 ## Contributing
