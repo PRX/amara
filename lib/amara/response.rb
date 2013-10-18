@@ -4,15 +4,15 @@ module Amara
   class Response
     attr_accessor :raw, :request
 
-    def object
-      if objects.size == 0
-        nil
-      elsif objects.size == 1
-        objects.first
-      elsif objects.size > 1
-        objects
-      end
-    end
+    # def object
+    #   if objects.size == 0
+    #     nil
+    #   elsif objects.size == 1
+    #     objects.first
+    #   elsif objects.size > 1
+    #     objects
+    #   end
+    # end
 
     def initialize(response, request={})
       @raw     = response
@@ -99,6 +99,7 @@ module Amara
       new_offset = [(offset + limit), total_count].min
       new_response = request[:api].request(request[:method], request[:path], request[:params].merge({offset: new_offset, limit: limit}))
       self.raw = new_response.raw
+      self
     end
 
     def previous_page
@@ -106,6 +107,7 @@ module Amara
       new_offset = [(offset - limit), 0].max
       new_response = request[:api].request(request[:method], request[:path], request[:params].merge({offset: new_offset, limit: limit}))
       self.raw = new_response.raw
+      self
     end
 
   end
