@@ -53,7 +53,7 @@ describe Amara::Teams do
 
     stub_request(:post, "https://www.amara.org/api2/partners/teams/").
       with(:body => "{\"slug\":\"prx-test-1\",\"name\":\"prx test 1\"}",
-           :headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443', 'User-Agent'=>'Amara Ruby Gem 0.1.0', 'X-Api-Username'=>'test_user', 'X-Apikey'=>'thisisakey'}).
+           :headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443', 'X-Api-Username'=>'test_user', 'X-Apikey'=>'thisisakey'}).
       to_return(:status => 200, :body => create_response, :headers => {})
     
 

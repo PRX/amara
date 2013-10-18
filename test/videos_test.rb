@@ -66,7 +66,7 @@ describe Amara::Videos do
 
     stub_request(:post, "https://www.amara.org/api2/partners/videos/").
       with(:body => "{\"team\":\"test-team\",\"title\":\"title\",\"video_url\":\"https://archive.org/download/1-test-mp3.JRiaC2.popuparchive.org/test.ogg\",\"primary_audio_language_code\":\"en\"}",
-           :headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443', 'User-Agent'=>'Amara Ruby Gem 0.1.0', 'X-Api-Username'=>'test_user', 'X-Apikey'=>'thisisakey'}).
+           :headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443', 'X-Api-Username'=>'test_user', 'X-Apikey'=>'thisisakey'}).
       to_return(:status => 200, :body => response, :headers => {})
 
     videos = Amara::Videos.new(api_key: 'thisisakey', api_username: 'test_user')
