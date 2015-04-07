@@ -33,15 +33,22 @@ module Amara
 
     def connection(options={})
       opts = merge_default_options(options)
-      # puts "connection:\n\toptions: #{options.inspect}\n\topts: #{opts.inspect}"
-      Faraday::Connection.new(opts) do |connection|
-        connection.request  :url_encoded
+      legal_opts = ['url', 'params', 'headers', 'request', 'ssl', 'proxy']
+      ok_opts = {}
+      legal_opts.each do |o|
+        if opts.has_key? o
+          ok_opts[o] = opts[o]
+        end
+      end
+      #STDERR.puts "connection:\n\toptions: #{options.inspect}\n\topts: #{opts.inspect}\n\tok_opts: #{ok_opts.inspect}"
+      Faraday.new(ok_opts) do |faraday|
+        faraday.request  :url_encoded
 
-        connection.response :mashify
-        connection.response :logger if ENV['DEBUG']
-        connection.response :json
+        faraday.response :mashify
+        faraday.response :logger if ENV['DEBUG']
+        faraday.response :json
 
-        connection.adapter(adapter)
+        faraday.adapter(adapter)  # IMPORTANT to be last
       end
 
     end
