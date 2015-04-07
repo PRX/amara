@@ -1,6 +1,6 @@
 # Amara
 
-[![Build Status](https://travis-ci.org/PRX/amara.png?branch=master)](https://travis-ci.org/PRX/amara)
+[![Build Status](https://travis-ci.org/PRX/amara.svg?branch=master)](https://travis-ci.org/PRX/amara)
 
 Ruby gem to access the Amara API.
 
