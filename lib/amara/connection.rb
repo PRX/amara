@@ -28,13 +28,12 @@ module Amara
       ).merge(opts)
       options[:headers] = options[:headers].merge(headers)
       Amara::HEADERS.each{|k,v| options[:headers][v] = options.delete(k) if options.key?(k)}
-      options
+      options.slice(*ALLOWED_OPTIONS)      
     end
 
     def connection(options={})
       opts = merge_default_options(options)
-      # puts "connection:\n\toptions: #{options.inspect}\n\topts: #{opts.inspect}"
-      Faraday::Connection.new(opts) do |connection|
+      Faraday.new(opts) do |connection|
         connection.request  :url_encoded
 
         connection.response :mashify
@@ -43,7 +42,6 @@ module Amara
 
         connection.adapter(adapter)
       end
-
     end
   end
 end
