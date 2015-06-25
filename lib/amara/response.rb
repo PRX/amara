@@ -26,10 +26,16 @@ module Amara
       case status_code_type
       when "2"
         # puts "all is well, status: #{response.status}"
-      when "4", "5"
-        raise "Whoops, error back from Amara: #{response.status}"
+      when "4"
+        if response.status == 404
+          raise NotFoundError
+        else
+          raise ClientError, "Whoops, error back from Amara: #{response.status}"
+        end
+      when "5"
+        raise ServerError, "Whoops, error back from Amara: #{response.status}"
       else
-        raise "Unrecongized status code: #{response.status}"
+        raise UnknownError, "Unrecongized status code: #{response.status}"
       end
     end
 
@@ -111,4 +117,10 @@ module Amara
     end
 
   end
+
+  class AmaraError    < ::StandardError; end
+  class ClientError   < AmaraError; end
+  class NotFoundError < AmaraError; end
+  class ServerError   < AmaraError; end
+  class UnknownError  < AmaraError; end
 end
