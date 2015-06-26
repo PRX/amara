@@ -117,10 +117,4 @@ module Amara
     end
 
   end
-
-  class AmaraError    < ::StandardError; end
-  class ClientError   < AmaraError; end
-  class NotFoundError < AmaraError; end
-  class ServerError   < AmaraError; end
-  class UnknownError  < AmaraError; end
 end
