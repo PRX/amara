@@ -19,7 +19,7 @@ describe Amara::Client do
     amara.languages.wont_be_nil
   end
 
-  it "throws throws no error on 200" do
+  it "throws no error on 200" do
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
        to_return(body: nil, status: 200)
     begin
