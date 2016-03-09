@@ -104,6 +104,14 @@ new_team = amara.teams.create(
 
 ```
 
+In the event of an error from the Amara service, the error will be wrapped in one of the following exception clases.
+```ruby
+raise Amara::NotFoundError # 404 error
+raise Amara::ClientError # All other 400 errors
+raise Amara::ServerError # 500 errors
+raise Amara::UnknownError # All other errors
+```
+
 ## Contributing
 
 1. Fork it
