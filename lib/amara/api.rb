@@ -31,15 +31,15 @@ module Amara
       end
     end
 
-    def request(method, path, params={}) # :nodoc:
+    def request(method, path, params: {}, raise_on_error: false) # :nodoc:
       unless (method && [:get, :post, :put, :patch, :delete].include?(method))
         raise ArgumentError, "whoops, that isn't a valid http method: #{method}"
       end
 
       conn = connection((params[:options] || {}).merge(current_options))
-      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/') 
+      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/')
 
-      response = conn.send(method) do |request|
+      raw_response = conn.send(method) do |request|
         case method.to_sym
         when :get, :delete
           request.url(request_path, params)
@@ -48,7 +48,23 @@ module Amara
           request.body = params[:data] ? params[:data].to_json : nil
         end
       end
-      Amara::Response.new(response, {api: self, method: method, path: path, params: params})
+
+      response = Amara::Response.new(raw_response, {api: self, method: method, path: path, params: params})
+      check_for_error(response) if raise_on_error
+      response
+    end
+
+    def check_for_error(response)
+      status_code = response.status
+      status_code_type = status_code.to_s[0]
+      case status_code_type
+      when "2"
+        # puts "all is well, status: #{response.status}"
+      when "4", "5"
+        raise "Whoops, error back from Amara: #{status_code}"
+      else
+        raise "Unrecongized status code: #{status_code}"
+      end
     end
 
     def base_path
@@ -68,28 +84,43 @@ module Amara
     end
 
     def list(params={})
-      self.current_options = current_options.merge(args_to_options(params))
-      request(:get, base_path, paginate(params))
+      _list(params: params, raise_on_error: false)
+    end
+
+    def list!(params={})
+      _list(params: params, raise_on_error: true)
     end
 
     def get(params={})
-      self.current_options = current_options.merge(args_to_options(params))
-      request(:get, base_path)
+      _get(params: params, raise_on_error: false)
+    end
+
+    def get!(params={})
+      _get(params: params, raise_on_error: true)
     end
 
     def create(params={})
-      self.current_options = current_options.merge(args_to_options(params))
-      request(:post, base_path, {data: params})
+      _create(params: params, raise_on_error: false)
+    end
+
+    def create!(params={})
+      _create(params: params, raise_on_error: true)
     end
 
     def update(params={})
-      self.current_options = current_options.merge(args_to_options(params))
-      request(:put, base_path, {data: params})
+      _update(params: params, raise_on_error: false)
+    end
+
+    def update!(params={})
+      _update(params: params, raise_on_error: true)
     end
 
     def delete(params={})
-      self.current_options = current_options.merge(args_to_options(params))
-      request(:delete, base_path)
+      _delete(params: params, raise_on_error: false)
+    end
+
+    def delete!(params={})
+      _delete(params: params, raise_on_error: true)
     end
 
     def args_to_options(args)
@@ -98,6 +129,33 @@ module Amara
       elsif args.is_a?(Hash)
         args
       end
+    end
+
+    private
+
+    def _list(params:, raise_on_error:)
+      self.current_options = current_options.merge(args_to_options(params))
+      request(:get, base_path, params: paginate(params), raise_on_error: raise_on_error)
+    end
+
+    def _get(params:, raise_on_error:)
+      self.current_options = current_options.merge(args_to_options(params))
+      request(:get, base_path, raise_on_error: raise_on_error)
+    end
+
+    def _create(params:, raise_on_error:)
+      self.current_options = current_options.merge(args_to_options(params))
+      request(:post, base_path, params: {data: params}, raise_on_error: raise_on_error)
+    end
+
+    def _update(params:, raise_on_error:)
+      self.current_options = current_options.merge(args_to_options(params))
+      request(:put, base_path, params: {data: params}, raise_on_error: raise_on_error)
+    end
+
+    def _delete(params:, raise_on_error:)
+      self.current_options = current_options.merge(args_to_options(params))
+      request(:delete, base_path, params: {}, raise_on_error: raise_on_error)
     end
   end
 end

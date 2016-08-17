@@ -17,24 +17,14 @@ module Amara
     def initialize(response, request={})
       @raw     = response
       @request = request
-
-      check_for_error(response)
-    end
-
-    def check_for_error(response)
-      status_code_type = response.status.to_s[0]
-      case status_code_type
-      when "2"
-        # puts "all is well, status: #{response.status}"
-      when "4", "5"
-        raise "Whoops, error back from Amara: #{response.status}"
-      else
-        raise "Unrecongized status code: #{response.status}"
-      end
     end
 
     def body
       self.raw.body
+    end
+
+    def status
+      self.raw.status
     end
 
     def object
@@ -97,7 +87,7 @@ module Amara
     def next_page
       return nil unless has_next_page?
       new_offset = [(offset + limit), total_count].min
-      new_response = request[:api].request(request[:method], request[:path], request[:params].merge({offset: new_offset, limit: limit}))
+      new_response = request[:api].request(request[:method], request[:path], params: request[:params].merge({offset: new_offset, limit: limit}))
       self.raw = new_response.raw
       self
     end
@@ -105,7 +95,7 @@ module Amara
     def previous_page
       return nil unless has_previous_page?
       new_offset = [(offset - limit), 0].max
-      new_response = request[:api].request(request[:method], request[:path], request[:params].merge({offset: new_offset, limit: limit}))
+      new_response = request[:api].request(request[:method], request[:path], params: request[:params].merge({offset: new_offset, limit: limit}))
       self.raw = new_response.raw
       self
     end
