@@ -46,7 +46,7 @@ describe Amara::API do
     response.limit.must_equal 2
     response.size.must_equal 2
     response.first.id.must_equal 1
-    
+
     second_response = '{"meta": {"limit": 2, "next": "/api2/partners/api/?limit=2&offset=4", "offset": 2, "previous":"/api2/partners/api/?limit=2&offset=0", "total_count": 5}, "objects": [{"id": 3}, {"id": 4}]}'
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=2').
        to_return(body: second_response)
@@ -70,4 +70,138 @@ describe Amara::API do
     response.wont_be :has_next_page?
   end
 
+  describe "#list" do
+    it "returns a response object on error" do
+      stub_request(:get, "https://www.amara.org/api2/partners/api/?limit=20&offset=0").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+      response = api.list
+
+      response.class.must_equal Amara::Response
+      response.status.must_equal 400
+    end
+  end
+
+  describe "#list!" do
+    it "raises an exception on error" do
+      stub_request(:get, "https://www.amara.org/api2/partners/api/?limit=20&offset=0").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+
+      error = proc {
+        api.list!
+      }.must_raise RuntimeError
+      error.message.must_equal 'Whoops, error back from Amara: 400'
+    end
+  end
+
+  describe "#get" do
+    it "returns a response object on error" do
+      stub_request(:get, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+      response = api.get
+
+      response.class.must_equal Amara::Response
+      response.status.must_equal 400
+    end
+  end
+
+  describe "#get!" do
+    it "raises an exception on error" do
+      stub_request(:get, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+
+      error = proc {
+        api.get!
+      }.must_raise RuntimeError
+      error.message.must_equal 'Whoops, error back from Amara: 400'
+    end
+  end
+
+  describe "#create" do
+    it "returns a response object on error" do
+      stub_request(:post, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+      response = api.create
+
+      response.class.must_equal Amara::Response
+      response.status.must_equal 400
+    end
+  end
+
+  describe "#create!" do
+    it "raises an exception on error" do
+      stub_request(:post, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+
+      error = proc {
+        api.create!
+      }.must_raise RuntimeError
+      error.message.must_equal 'Whoops, error back from Amara: 400'
+    end
+  end
+
+  describe "#update" do
+    it "returns a response object on error" do
+      stub_request(:put, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+      response = api.update
+
+      response.class.must_equal Amara::Response
+      response.status.must_equal 400
+    end
+  end
+
+  describe "#update!" do
+    it "raises an exception on error" do
+      stub_request(:put, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 500)
+
+      api = Amara::API.new
+
+      error = proc {
+        api.update!
+      }.must_raise RuntimeError
+      error.message.must_equal 'Whoops, error back from Amara: 500'
+    end
+  end
+
+  describe "#delete" do
+    it "returns a response object on error" do
+      stub_request(:delete, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 400)
+
+      api = Amara::API.new
+      response = api.delete
+
+      response.class.must_equal Amara::Response
+      response.status.must_equal 400
+    end
+  end
+
+  describe "#delete!" do
+    it "raises an exception on error" do
+      stub_request(:delete, "https://www.amara.org/api2/partners/api/").
+        to_return(body: '{}', status: 500)
+
+      api = Amara::API.new
+
+      error = proc {
+        api.delete!
+      }.must_raise RuntimeError
+      error.message.must_equal 'Whoops, error back from Amara: 500'
+    end
+  end
 end
