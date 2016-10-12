@@ -4,6 +4,7 @@ require 'rubygems'
 require 'active_support/all'
 
 require 'amara/version'
+require 'amara/errors'
 require 'amara/configuration'
 require 'amara/connection'
 require 'amara/response'
@@ -43,10 +44,4 @@ module Amara
     :managers => 'Managers and admins',
     :admins   => 'Admins only'
   }
-
-  class Error         < ::StandardError; end
-  class ClientError   < Error; end
-  class NotFoundError < Error; end
-  class ServerError   < Error; end
-  class UnknownError  < Error; end
 end

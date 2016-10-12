@@ -37,32 +37,40 @@ describe Amara::Client do
   it "throws a client error on 400s (except 404)" do
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
        to_return(body: nil, status: 400)
-    proc {
+    error = proc {
       Amara::API.new.list(limit: 2)
     }.must_raise Amara::ClientError
+
+    error.response.status.must_equal 400
   end
 
   it "throws a not found error on 404" do
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
        to_return(body: nil, status: 404)
-    proc {
+    error = proc {
       Amara::API.new.list(limit: 2)
     }.must_raise Amara::NotFoundError
+
+    error.response.status.must_equal 404
   end
 
   it "throws a server error on 500s" do
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
        to_return(body: nil, status: 500)
-    proc {
+    error = proc {
       Amara::API.new.list(limit: 2)
     }.must_raise Amara::ServerError
+
+    error.response.status.must_equal 500
   end
 
   it "throws an unknown error on all other errors" do
     stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
        to_return(body: nil, status: 601)
-    proc {
+    error = proc {
       Amara::API.new.list(limit: 2)
     }.must_raise Amara::UnknownError
+
+    error.response.status.must_equal 601
   end
 end

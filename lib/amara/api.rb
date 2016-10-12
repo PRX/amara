@@ -36,19 +36,42 @@ module Amara
         raise ArgumentError, "whoops, that isn't a valid http method: #{method}"
       end
 
-      conn = connection((params[:options] || {}).merge(current_options))
-      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/') 
+      options = current_options.merge(params[:options] || {})
+      request_params = params.except(:options)
+      conn = connection(options)
+      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/')
 
       response = conn.send(method) do |request|
         case method.to_sym
         when :get, :delete
-          request.url(request_path, params)
+          request.url(request_path, request_params)
         when :post, :put
           request.path = request_path
-          request.body = params[:data] ? params[:data].to_json : nil
+          request.body = request_params[:data] ? request_params[:data].to_json : nil
         end
       end
-      Amara::Response.new(response, {api: self, method: method, path: path, params: params})
+
+      amara_response = Amara::Response.new(response, { api: self, method: method, path: path, params: params } )
+      check_for_error(response) if options[:raise_errors]
+      amara_response
+    end
+
+    def check_for_error(response)
+      status_code_type = response.status.to_s[0]
+      case status_code_type
+      when "2"
+        # puts "all is well, status: #{response.status}"
+      when "4"
+        if response.status == 404
+          raise NotFoundError.new("Resource not found", response)
+        else
+          raise ClientError.new("Whoops, error back from Amara: #{response.status}", response)
+        end
+      when "5"
+        raise ServerError.new("Whoops, error back from Amara: #{response.status}", response)
+      else
+        raise UnknownError.new("Unrecongized status code: #{response.status}", response)
+      end
     end
 
     def base_path
@@ -64,7 +87,7 @@ module Amara
     end
 
     def paginate(params={})
-      {limit: 20, offset: 0}.merge(params)
+      params.reverse_merge(limit: 20, offset: 0)
     end
 
     def list(params={})
@@ -72,9 +95,17 @@ module Amara
       request(:get, base_path, paginate(params))
     end
 
+    def list!(params={})
+      list(force_raise_errors(params))
+    end
+
     def get(params={})
       self.current_options = current_options.merge(args_to_options(params))
       request(:get, base_path)
+    end
+
+    def get!(params={})
+      get(force_raise_errors(params))
     end
 
     def create(params={})
@@ -82,9 +113,17 @@ module Amara
       request(:post, base_path, {data: params})
     end
 
+    def create!(params={})
+      create(force_raise_errors(params))
+    end
+
     def update(params={})
       self.current_options = current_options.merge(args_to_options(params))
       request(:put, base_path, {data: params})
+    end
+
+    def update!(params={})
+      update(force_raise_errors(params))
     end
 
     def delete(params={})
@@ -92,11 +131,22 @@ module Amara
       request(:delete, base_path)
     end
 
+    def delete!(params={})
+      delete(force_raise_errors(params))
+    end
+
     def args_to_options(args)
       params =  if args.is_a?(String) || args.is_a?(Symbol)
         {"#{self.class.name.demodulize.downcase.singularize}_id" => args}
       elsif args.is_a?(Hash)
         args
+      end
+    end
+
+    def force_raise_errors(params)
+      (params || {}).with_indifferent_access.tap do |p|
+        p[:options] = ActiveSupport::HashWithIndifferentAccess.new(p[:options])
+        p[:options][:raise_errors] = true
       end
     end
   end
