@@ -98,4 +98,17 @@ describe Amara::API do
     response = api.list(limit: 2, options: { raise_errors: false } )
     response.status.must_equal 500
   end
+
+  it "can use bang methods to raise errors" do
+    stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
+       to_return(status: 500, body: '{}')
+
+    api = Amara::API.new(raise_errors: false)
+
+    error = proc {
+      response = api.list!(limit: 2)
+    }.must_raise Amara::ServerError
+
+    error.message.must_equal 'Whoops, error back from Amara: 500'
+  end
 end

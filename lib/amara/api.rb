@@ -87,7 +87,7 @@ module Amara
     end
 
     def paginate(params={})
-      {limit: 20, offset: 0}.merge(params)
+      params.reverse_merge(limit: 20, offset: 0)
     end
 
     def list(params={})
@@ -95,9 +95,17 @@ module Amara
       request(:get, base_path, paginate(params))
     end
 
+    def list!(params={})
+      list(force_raise_errors(params))
+    end
+
     def get(params={})
       self.current_options = current_options.merge(args_to_options(params))
       request(:get, base_path)
+    end
+
+    def get!(params={})
+      get(force_raise_errors(params))
     end
 
     def create(params={})
@@ -105,14 +113,26 @@ module Amara
       request(:post, base_path, {data: params})
     end
 
+    def create!(params={})
+      create(force_raise_errors(params))
+    end
+
     def update(params={})
       self.current_options = current_options.merge(args_to_options(params))
       request(:put, base_path, {data: params})
     end
 
+    def update!(params={})
+      update(force_raise_errors(params))
+    end
+
     def delete(params={})
       self.current_options = current_options.merge(args_to_options(params))
       request(:delete, base_path)
+    end
+
+    def delete!(params={})
+      delete(force_raise_errors(params))
     end
 
     def args_to_options(args)
@@ -121,6 +141,13 @@ module Amara
       elsif args.is_a?(Hash)
         args
       end
+    end
+
+    def force_raise_errors(params)
+      p = params.with_indifferent_access
+      p[:options] = ActiveSupport::HashWithIndifferentAccess.new(p[:options])
+      p[:options][:raise_errors] = true
+      p
     end
   end
 end
