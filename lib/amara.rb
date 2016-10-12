@@ -44,4 +44,9 @@ module Amara
     :admins   => 'Admins only'
   }
 
+  class Error         < ::StandardError; end
+  class ClientError   < Error; end
+  class NotFoundError < Error; end
+  class ServerError   < Error; end
+  class UnknownError  < Error; end
 end
