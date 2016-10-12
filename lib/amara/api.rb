@@ -63,14 +63,14 @@ module Amara
         # puts "all is well, status: #{response.status}"
       when "4"
         if response.status == 404
-          raise NotFoundError
+          raise NotFoundError.new("Resource not found", response)
         else
-          raise ClientError, "Whoops, error back from Amara: #{response.status}"
+          raise ClientError.new("Whoops, error back from Amara: #{response.status}", response)
         end
       when "5"
-        raise ServerError, "Whoops, error back from Amara: #{response.status}"
+        raise ServerError.new("Whoops, error back from Amara: #{response.status}", response)
       else
-        raise UnknownError, "Unrecongized status code: #{response.status}"
+        raise UnknownError.new("Unrecongized status code: #{response.status}", response)
       end
     end
 

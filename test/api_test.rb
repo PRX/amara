@@ -80,6 +80,8 @@ describe Amara::API do
       response = api.list(limit: 2)
     }.must_raise Amara::ServerError
 
+    error.response.wont_be_nil
+    error.response.status.must_equal 500
     error.message.must_equal 'Whoops, error back from Amara: 500'
   end
 
@@ -109,6 +111,8 @@ describe Amara::API do
       response = api.list!(limit: 2)
     }.must_raise Amara::ServerError
 
+    error.response.wont_be_nil
+    error.response.status.must_equal 500
     error.message.must_equal 'Whoops, error back from Amara: 500'
   end
 end
