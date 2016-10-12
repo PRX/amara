@@ -49,7 +49,7 @@ module Amara
         end
       end
       response = Amara::Response.new(response, { api: self, method: method, path: path, params: params } )
-      check_for_error(response) if !current_options[:return_errors]
+      check_for_error(response) if current_options[:raise_errors]
       response
     end
 
