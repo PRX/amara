@@ -144,10 +144,10 @@ module Amara
     end
 
     def force_raise_errors(params)
-      p = params.with_indifferent_access
-      p[:options] = ActiveSupport::HashWithIndifferentAccess.new(p[:options])
-      p[:options][:raise_errors] = true
-      p
+      (params || {}).with_indifferent_access.tap do |p|
+        p[:options] = ActiveSupport::HashWithIndifferentAccess.new(p[:options])
+        p[:options][:raise_errors] = true
+      end
     end
   end
 end
