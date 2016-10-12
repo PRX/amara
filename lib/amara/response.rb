@@ -17,30 +17,14 @@ module Amara
     def initialize(response, request={})
       @raw     = response
       @request = request
-
-      check_for_error(response)
-    end
-
-    def check_for_error(response)
-      status_code_type = response.status.to_s[0]
-      case status_code_type
-      when "2"
-        # puts "all is well, status: #{response.status}"
-      when "4"
-        if response.status == 404
-          raise NotFoundError
-        else
-          raise ClientError, "Whoops, error back from Amara: #{response.status}"
-        end
-      when "5"
-        raise ServerError, "Whoops, error back from Amara: #{response.status}"
-      else
-        raise UnknownError, "Unrecongized status code: #{response.status}"
-      end
     end
 
     def body
       self.raw.body
+    end
+
+    def status
+      self.raw.status
     end
 
     def object
@@ -115,6 +99,5 @@ module Amara
       self.raw = new_response.raw
       self
     end
-
   end
 end

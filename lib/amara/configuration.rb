@@ -8,7 +8,8 @@ module Amara
       :api_key,
       :adapter,
       :endpoint,
-      :user_agent
+      :user_agent,
+      :return_errors
     ].freeze
 
     # this you need to get from amara - go register!
@@ -23,6 +24,9 @@ module Amara
 
     # The value sent in the http header for 'User-Agent' if none is set
     DEFAULT_USER_AGENT = "Amara Ruby Gem #{Amara::VERSION}".freeze
+
+    # by default, raise errors instead of returning them
+    DEFAULT_RETURN_ERRORS = false
 
     attr_accessor *VALID_OPTIONS_KEYS
 
@@ -49,13 +53,13 @@ module Amara
 
     # Reset configuration options to their defaults
     def reset!
-      self.api_username = DEFAULT_API_USERNAME
-      self.api_key      = DEFAULT_API_KEY
-      self.adapter      = DEFAULT_ADAPTER
-      self.endpoint     = DEFAULT_ENDPOINT
-      self.user_agent   = DEFAULT_USER_AGENT
+      self.api_username  = DEFAULT_API_USERNAME
+      self.api_key       = DEFAULT_API_KEY
+      self.adapter       = DEFAULT_ADAPTER
+      self.endpoint      = DEFAULT_ENDPOINT
+      self.user_agent    = DEFAULT_USER_AGENT
+      self.return_errors = DEFAULT_RETURN_ERRORS
       self
     end
-
   end
 end

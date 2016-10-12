@@ -37,7 +37,7 @@ module Amara
       end
 
       conn = connection((params[:options] || {}).merge(current_options))
-      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/') 
+      request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/')
 
       response = conn.send(method) do |request|
         case method.to_sym
@@ -48,7 +48,27 @@ module Amara
           request.body = params[:data] ? params[:data].to_json : nil
         end
       end
-      Amara::Response.new(response, {api: self, method: method, path: path, params: params})
+      response = Amara::Response.new(response, { api: self, method: method, path: path, params: params } )
+      check_for_error(response) if !current_options[:return_errors]
+      response
+    end
+
+    def check_for_error(response)
+      status_code_type = response.status.to_s[0]
+      case status_code_type
+      when "2"
+        # puts "all is well, status: #{response.status}"
+      when "4"
+        if response.status == 404
+          raise NotFoundError
+        else
+          raise ClientError, "Whoops, error back from Amara: #{response.status}"
+        end
+      when "5"
+        raise ServerError, "Whoops, error back from Amara: #{response.status}"
+      else
+        raise UnknownError, "Unrecongized status code: #{response.status}"
+      end
     end
 
     def base_path
