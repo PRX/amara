@@ -36,21 +36,24 @@ module Amara
         raise ArgumentError, "whoops, that isn't a valid http method: #{method}"
       end
 
-      conn = connection((params[:options] || {}).merge(current_options))
+      options = current_options.merge(params[:options] || {})
+      request_params = params.except(:options)
+      conn = connection(options)
       request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/')
 
       response = conn.send(method) do |request|
         case method.to_sym
         when :get, :delete
-          request.url(request_path, params)
+          request.url(request_path, request_params)
         when :post, :put
           request.path = request_path
-          request.body = params[:data] ? params[:data].to_json : nil
+          request.body = request_params[:data] ? request_params[:data].to_json : nil
         end
       end
-      response = Amara::Response.new(response, { api: self, method: method, path: path, params: params } )
-      check_for_error(response) if current_options[:raise_errors]
-      response
+
+      amara_response = Amara::Response.new(response, { api: self, method: method, path: path, params: params } )
+      check_for_error(response) if options[:raise_errors]
+      amara_response
     end
 
     def check_for_error(response)

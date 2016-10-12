@@ -90,5 +90,12 @@ describe Amara::API do
     api = Amara::API.new(raise_errors: false)
     response = api.list(limit: 2)
     response.status.must_equal 500
+
+    stub_request(:get, 'https://www.amara.org/api2/partners/api/?limit=2&offset=0').
+       to_return(status: 500, body: '{}')
+
+    api = Amara::API.new(raise_errors: true)
+    response = api.list(limit: 2, options: { raise_errors: false } )
+    response.status.must_equal 500
   end
 end
