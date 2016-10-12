@@ -27,5 +27,10 @@ module Amara
       @users ||= ApiFactory.api('Amara::Users', self, params, &block)
     end
 
+    def path(path, params={}, &block)
+      @path ||= ApiFactory.api('Amara::Path', self, params, &block)
+      @path.current_options['path'] = path
+      @path
+    end
   end
 end

@@ -18,6 +18,7 @@ require 'amara/videos/languages'
 require 'amara/videos/languages/subtitles'
 require 'amara/videos/urls'
 require 'amara/activity'
+require 'amara/path'
 require 'amara/client'
 
 module Amara

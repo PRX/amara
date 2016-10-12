@@ -19,4 +19,8 @@ describe Amara::Client do
     amara.languages.wont_be_nil
   end
 
+  it "returns a path api object" do
+    amara = Amara::Client.new
+    amara.path('some/path').wont_be_nil
+  end
 end
