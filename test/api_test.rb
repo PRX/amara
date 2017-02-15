@@ -115,4 +115,16 @@ describe Amara::API do
     error.response.status.must_equal 500
     error.message.must_equal 'Whoops, error back from Amara: 500'
   end
+
+  it "should not post local options to amara" do
+    expected_body = {a: 1, b: 2}
+
+    stub_post = stub_request(:post, 'https://www.amara.org/api2/partners/api/').
+      with(body: expected_body.to_json)
+
+    api = Amara::API.new
+    api.create!(a:1, b:2)
+
+    assert_requested stub_post
+  end
 end
