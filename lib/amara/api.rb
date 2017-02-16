@@ -37,7 +37,13 @@ module Amara
       end
 
       options = current_options.merge(params[:options] || {})
+
+      # if local :options exist, don't send them to amara.org
       request_params = params.except(:options)
+      if params[:data]
+        request_params[:data] = params[:data].except(:options)
+      end
+
       conn = connection(options)
       request_path = (conn.path_prefix + '/' + path + '/').gsub(/\/+/, '/')
 
