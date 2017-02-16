@@ -31,6 +31,14 @@ module Amara
       end
     end
 
+    def update_current_options!(options)
+      # any of these which are present in options get dropped
+      invalid_options = [:url]
+
+      new_options = args_to_options(options).except(*invalid_options)
+      self.current_options = current_options.merge(new_options)
+    end
+
     def request(method, path, params={}) # :nodoc:
       unless (method && [:get, :post, :put, :patch, :delete].include?(method))
         raise ArgumentError, "whoops, that isn't a valid http method: #{method}"
@@ -97,7 +105,7 @@ module Amara
     end
 
     def list(params={})
-      self.current_options = current_options.merge(args_to_options(params))
+      update_current_options!(params)
       request(:get, base_path, paginate(params))
     end
 
@@ -106,7 +114,7 @@ module Amara
     end
 
     def get(params={})
-      self.current_options = current_options.merge(args_to_options(params))
+      update_current_options!(params)
       request(:get, base_path)
     end
 
@@ -115,7 +123,7 @@ module Amara
     end
 
     def create(params={})
-      self.current_options = current_options.merge(args_to_options(params))
+      update_current_options!(params)
       request(:post, base_path, {data: params})
     end
 
@@ -124,7 +132,7 @@ module Amara
     end
 
     def update(params={})
-      self.current_options = current_options.merge(args_to_options(params))
+      update_current_options!(params)
       request(:put, base_path, {data: params})
     end
 
@@ -133,7 +141,7 @@ module Amara
     end
 
     def delete(params={})
-      self.current_options = current_options.merge(args_to_options(params))
+      update_current_options!(params)
       request(:delete, base_path)
     end
 
