@@ -127,4 +127,16 @@ describe Amara::API do
 
     assert_requested stub_post
   end
+
+  it "should allow a 'url' parameter" do
+    expected_body = { url: 'http://example.com' }
+
+    stub_post = stub_request(:post, 'https://www.amara.org/api2/partners/api/').
+      with(body: expected_body.to_json)
+
+    api = Amara::API.new
+    api.create!(expected_body)
+
+    assert_requested stub_post
+  end
 end
