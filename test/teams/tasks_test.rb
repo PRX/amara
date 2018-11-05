@@ -24,10 +24,16 @@ describe Amara::Teams::Tasks do
 
     stub_request(:get, "https://www.amara.org/api2/partners/teams/test-team/tasks/?limit=2&offset=0").
       with(:headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443'}).
-      to_return(:status => 200, :body => "", :headers => {})
+      to_return(:status => 200, :body => first_response, :headers => {})
 
     amara = Amara::Client.new
     response = amara.teams('test-team').tasks.list(limit: 2)
+
+    response.must_be_instance_of Amara::Response
+    response.objects.must_be_instance_of Hashie::Array
+    response.objects.each_with_index do |obj, i|
+      obj.must_equal Hashie::Mash.new(JSON.parse(first_response)['objects'][i])
+    end
   end
 
 end
