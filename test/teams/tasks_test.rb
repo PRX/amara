@@ -36,4 +36,16 @@ describe Amara::Teams::Tasks do
     end
   end
 
+  it "passes along query parameters to the API" do
+    completed_after = Time.new.to_i
+
+    # stub path we expect to hit with our request
+    stub_request(:get, "https://www.amara.org/api2/partners/teams/test-team/tasks/?completed=true&completed-after=#{completed_after}&limit=2&offset=0").
+      with(:headers => {'Accept'=>'application/json', 'Content-Type'=>'application/json', 'Host'=>'www.amara.org:443'})
+
+    amara = Amara::Client.new
+
+    # hit the API to ensure Webmock stub gets hit
+    amara.teams('test-team').tasks.list(limit: 2, completed: true, 'completed-after': completed_after)
+  end
 end
